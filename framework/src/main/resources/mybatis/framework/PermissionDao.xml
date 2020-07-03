@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.PermissionDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Permission">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="action" jdbcType="INTEGER" property="action" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,role,action FROM sys_permission
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Permission">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_permission (role,action)
+      values 
+      (#{role,jdbcType=INTEGER},#{action,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Permission" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_PERMISSION.nextval from DUAL
+    </selectKey>
+    insert into sys_permission (id,role,action)
+      values 
+      (#{id,jdbcType=INTEGER},#{role,jdbcType=INTEGER},#{action,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Permission">
+    insert into sys_permission (role,action)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.role,jdbcType=INTEGER},#{item.action,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Permission" databaseId="Oracle">
+     insert into sys_permission (id,role,action)
+       select SEQUENCE_SYS_PERMISSION.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.role,jdbcType=INTEGER},#{item.action,jdbcType=INTEGER} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Permission">
+    insert into sys_permission (id,role,action)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.role,jdbcType=INTEGER},#{item.action,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Permission" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_permission ON 
+    insert into sys_permission (id,role,action)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.role,jdbcType=INTEGER},#{item.action,jdbcType=INTEGER})
+    </foreach>
+    set IDENTITY_INSERT sys_permission OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Permission" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_permission (id,role,action) values(#{item.id,jdbcType=INTEGER},#{item.role,jdbcType=INTEGER},#{item.action,jdbcType=INTEGER})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_permission where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_permission where id in (${_parameter})
+  </delete>
+  <select id="selectByRole" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where role = #{role,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByRole" parameterType="java.lang.Integer">
+    delete from sys_permission where role = #{role,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatchByRole" parameterType="java.lang.String">
+    delete from sys_permission where role in (${_parameter})
+  </delete>
+  <select id="selectByAction" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where action = #{action,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByAction" parameterType="java.lang.Integer">
+    delete from sys_permission where action = #{action,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatchByAction" parameterType="java.lang.String">
+    delete from sys_permission where action in (${_parameter})
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_permission where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Permission">
+    update sys_permission set 
+      role = #{role,jdbcType=INTEGER},
+      action = #{action,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Permission">
+    update sys_permission 
+      <set>
+        <if test="role != null"> role = #{role,jdbcType=INTEGER},</if>
+        <if test="action != null"> action = #{action,jdbcType=INTEGER},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Permission">
+    update sys_permission set 
+      id = #{record.id,jdbcType=INTEGER},
+      role = #{record.role,jdbcType=INTEGER},
+      action = #{record.action,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Permission" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="role != null"> and role = #{role,jdbcType=INTEGER} </if>
+        <if test="action != null"> and action = #{action,jdbcType=INTEGER} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

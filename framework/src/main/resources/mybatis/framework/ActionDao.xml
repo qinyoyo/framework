@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.ActionDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Action">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="params" jdbcType="VARCHAR" property="params" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,note,value,params,method FROM sys_action
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Action">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_action (note,value,params,method)
+      values 
+      (#{note,jdbcType=VARCHAR},#{value,jdbcType=VARCHAR},#{params,jdbcType=VARCHAR},#{method,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Action" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_ACTION.nextval from DUAL
+    </selectKey>
+    insert into sys_action (id,note,value,params,method)
+      values 
+      (#{id,jdbcType=INTEGER},#{note,jdbcType=VARCHAR},#{value,jdbcType=VARCHAR},#{params,jdbcType=VARCHAR},#{method,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Action">
+    insert into sys_action (note,value,params,method)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.note,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR},#{item.params,jdbcType=VARCHAR},#{item.method,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Action" databaseId="Oracle">
+     insert into sys_action (id,note,value,params,method)
+       select SEQUENCE_SYS_ACTION.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.note,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR},#{item.params,jdbcType=VARCHAR},#{item.method,jdbcType=VARCHAR} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Action">
+    insert into sys_action (id,note,value,params,method)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.note,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR},#{item.params,jdbcType=VARCHAR},#{item.method,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Action" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_action ON 
+    insert into sys_action (id,note,value,params,method)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.note,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR},#{item.params,jdbcType=VARCHAR},#{item.method,jdbcType=VARCHAR})
+    </foreach>
+    set IDENTITY_INSERT sys_action OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Action" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_action (id,note,value,params,method) values(#{item.id,jdbcType=INTEGER},#{item.note,jdbcType=VARCHAR},#{item.value,jdbcType=VARCHAR},#{item.params,jdbcType=VARCHAR},#{item.method,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_action where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_action where id in (${_parameter})
+  </delete>
+  <select id="selectByValue" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where value = #{value,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByValue" parameterType="java.lang.String">
+    delete from sys_action where value = #{value,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByValue" parameterType="java.lang.String">
+    delete from sys_action where value in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_action where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Action">
+    update sys_action set 
+      note = #{note,jdbcType=VARCHAR},
+      value = #{value,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Action">
+    update sys_action 
+      <set>
+        <if test="note != null"> note = #{note,jdbcType=VARCHAR},</if>
+        <if test="value != null"> value = #{value,jdbcType=VARCHAR},</if>
+        <if test="params != null"> params = #{params,jdbcType=VARCHAR},</if>
+        <if test="method != null"> method = #{method,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Action">
+    update sys_action set 
+      note = #{record.note,jdbcType=VARCHAR},
+      id = #{record.id,jdbcType=INTEGER},
+      value = #{record.value,jdbcType=VARCHAR},
+      params = #{record.params,jdbcType=VARCHAR},
+      method = #{record.method,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Action" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="note != null"> and note like #{note,jdbcType=VARCHAR} </if>
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="value != null"> and value like #{value,jdbcType=VARCHAR} </if>
+        <if test="params != null"> and params like #{params,jdbcType=VARCHAR} </if>
+        <if test="method != null"> and method like #{method,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

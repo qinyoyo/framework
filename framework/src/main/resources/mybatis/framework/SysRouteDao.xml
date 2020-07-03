@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.SysRouteDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.SysRoute">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="component" jdbcType="VARCHAR" property="component" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="breadcrumb_show" jdbcType="TINYINT" property="breadcrumbShow" />
+    <result column="need_cache" jdbcType="TINYINT" property="needCache" />
+    <result column="tag_view" jdbcType="TINYINT" property="tagView" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,path,name,component,title,breadcrumb_show,need_cache,tag_view FROM sys_route
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.SysRoute">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_route (path,name,component,title,breadcrumb_show,need_cache,tag_view)
+      values 
+      (#{path,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{component,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{breadcrumbShow,jdbcType=TINYINT},#{needCache,jdbcType=TINYINT},#{tagView,jdbcType=TINYINT})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.SysRoute" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_ROUTE.nextval from DUAL
+    </selectKey>
+    insert into sys_route (id,path,name,component,title,breadcrumb_show,need_cache,tag_view)
+      values 
+      (#{id,jdbcType=INTEGER},#{path,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{component,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{breadcrumbShow,jdbcType=TINYINT},#{needCache,jdbcType=TINYINT},#{tagView,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.SysRoute">
+    insert into sys_route (path,name,component,title,breadcrumb_show,need_cache,tag_view)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.path,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.component,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.breadcrumbShow,jdbcType=TINYINT},#{item.needCache,jdbcType=TINYINT},#{item.tagView,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.SysRoute" databaseId="Oracle">
+     insert into sys_route (id,path,name,component,title,breadcrumb_show,need_cache,tag_view)
+       select SEQUENCE_SYS_ROUTE.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.path,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.component,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.breadcrumbShow,jdbcType=TINYINT},#{item.needCache,jdbcType=TINYINT},#{item.tagView,jdbcType=TINYINT} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.SysRoute">
+    insert into sys_route (id,path,name,component,title,breadcrumb_show,need_cache,tag_view)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.path,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.component,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.breadcrumbShow,jdbcType=TINYINT},#{item.needCache,jdbcType=TINYINT},#{item.tagView,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.SysRoute" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_route ON 
+    insert into sys_route (id,path,name,component,title,breadcrumb_show,need_cache,tag_view)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.path,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.component,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.breadcrumbShow,jdbcType=TINYINT},#{item.needCache,jdbcType=TINYINT},#{item.tagView,jdbcType=TINYINT})
+    </foreach>
+    set IDENTITY_INSERT sys_route OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.SysRoute" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_route (id,path,name,component,title,breadcrumb_show,need_cache,tag_view) values(#{item.id,jdbcType=INTEGER},#{item.path,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.component,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.breadcrumbShow,jdbcType=TINYINT},#{item.needCache,jdbcType=TINYINT},#{item.tagView,jdbcType=TINYINT})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_route where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_route where id in (${_parameter})
+  </delete>
+  <select id="selectByPath" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where path = #{path,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPath" parameterType="java.lang.String">
+    delete from sys_route where path = #{path,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByPath" parameterType="java.lang.String">
+    delete from sys_route where path in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByName" parameterType="java.lang.String">
+    delete from sys_route where name = #{name,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByName" parameterType="java.lang.String">
+    delete from sys_route where name in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_route where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.SysRoute">
+    update sys_route set 
+      path = #{path,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      component = #{component,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      breadcrumb_show = #{breadcrumbShow,jdbcType=TINYINT},
+      need_cache = #{needCache,jdbcType=TINYINT},
+      tag_view = #{tagView,jdbcType=TINYINT}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.SysRoute">
+    update sys_route 
+      <set>
+        <if test="path != null"> path = #{path,jdbcType=VARCHAR},</if>
+        <if test="name != null"> name = #{name,jdbcType=VARCHAR},</if>
+        <if test="component != null"> component = #{component,jdbcType=VARCHAR},</if>
+        <if test="title != null"> title = #{title,jdbcType=VARCHAR},</if>
+        <if test="breadcrumbShow != null"> breadcrumb_show = #{breadcrumbShow,jdbcType=TINYINT},</if>
+        <if test="needCache != null"> need_cache = #{needCache,jdbcType=TINYINT},</if>
+        <if test="tagView != null"> tag_view = #{tagView,jdbcType=TINYINT},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.SysRoute">
+    update sys_route set 
+      id = #{record.id,jdbcType=INTEGER},
+      path = #{record.path,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      component = #{record.component,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
+      breadcrumb_show = #{record.breadcrumbShow,jdbcType=TINYINT},
+      need_cache = #{record.needCache,jdbcType=TINYINT},
+      tag_view = #{record.tagView,jdbcType=TINYINT}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.SysRoute" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="path != null"> and path like #{path,jdbcType=VARCHAR} </if>
+        <if test="name != null"> and name like #{name,jdbcType=VARCHAR} </if>
+        <if test="component != null"> and component like #{component,jdbcType=VARCHAR} </if>
+        <if test="title != null"> and title like #{title,jdbcType=VARCHAR} </if>
+        <if test="breadcrumbShow != null"> and breadcrumb_show = #{breadcrumbShow,jdbcType=TINYINT} </if>
+        <if test="needCache != null"> and need_cache = #{needCache,jdbcType=TINYINT} </if>
+        <if test="tagView != null"> and tag_view = #{tagView,jdbcType=TINYINT} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

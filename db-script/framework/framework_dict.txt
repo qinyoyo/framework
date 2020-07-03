@@ -1,0 +1,150 @@
+
+表：oauth_client_details : OAuth2客户端配置
+client_id	client_id	varchar	✘	
+client_secret	client_secret	varchar	✘	
+scope	scope	varchar	✘	
+authorized_grant_types	认证类型	varchar	✘	password:密码模式  authorization_code:授权码模式  implicit:简化模式  client_credentials:客户端模式  
+web_server_redirect_uri	redirect_url	varchar	√	
+authorities	权限集	varchar	✘	
+access_token_validity	token有效时间	int	✘	
+refresh_token_validity	刷新时间秒	int	✘	
+autoapprove	自动授权	varchar	✘	
+expired_date	过期时间	datetime	√	
+locked	锁定	tinyint(1)	✘	
+enabled	激活	tinyint(1)	✘	
+decription	描述	varchar	√	
+additional_information	附加属性(json)	text	√	
+resource_ids		varchar	√	
+
+表：sys_action : 功能列表
+note	描述	varchar	√	
+id	ID	int	✘	
+value	值	varchar	✘	
+params	参数	varchar	√	
+method	方法	varchar	√	
+
+表：sys_data_dict : 数据字典
+id		int	✘	
+dict	分类	varchar	✘	
+code	代码	varchar	✘	
+text	显示值	varchar	✘	
+order_num	排列顺序	int	√	
+
+表：sys_flow_process : 流程处理
+id		varchar	✘	
+flow_id	流程单	varchar	✘	
+operation	操作	varchar	√	
+selection	选择	varchar	√	
+state_name0	初始状态	varchar	√	
+state_name1	处理后状态	varchar	√	
+time	处理时间	datetime	✘	
+note	处理意见	varchar	√	
+state0	初始状态	int	√	
+state1	处理后状态	int	✘	
+operator	处理人	varchar	✘	
+next_operator	后续处理人	varchar	√	
+
+表：sys_log : 系统日志
+id	uuid主键	varchar	✘	
+time	时间	datetime	✘	
+keyword	关键词	varchar	✘	
+user_type	用户类别	varchar	√	
+user_info	用户信息	varchar	√	
+note	详情	varchar	√	
+
+表：sys_menu : 系统菜单
+id		int	✘	
+sort_num	排列顺序	int	✘	
+name	名称	varchar	✘	
+parent	上级菜单	int	√	
+is_divider	分割线	tinyint(1)	✘	
+icon	图标	varchar	√	
+action	功能地址	varchar	√	
+class_name	附加属性	varchar	√	
+data_action	附加参数	varchar	√	
+bigIcon	大图标	varchar	√	
+mobile_hidden	手机隐藏	tinyint(1)	✘	
+js_cmd	操作函数	varchar	√	
+
+表：sys_message : 消息
+id	主键	int	✘	
+read_time	已阅	datetime	√	
+create_time	创建时间	datetime	✘	
+receiver_name	消息接收人姓名	varchar	√	
+sender_name	消息发送人姓名	varchar	√	
+title	消息标题	varchar	✘	
+content	消息内容	text	✘	
+url	消息点击链接	varchar	√	
+receiver	消息接收人	varchar	√	
+sender	消息发送人	varchar	√	
+event_id	关联id	varchar	√	
+
+表：sys_org : 组织机构
+org_code	代码	int	✘	
+name	名称	varchar	✘	
+parent	上级机构	int	√	
+phone	电话	varchar	√	
+fax	传真	varchar	√	
+role_list	角色序列	varchar	√	
+address	地址	varchar	√	
+
+表：sys_permission : 功能分配表
+id		int	✘	
+role	角色	int	✘	
+action	功能	int	✘	
+
+表：sys_role : 角色表
+id		int	✘	
+code	代码	varchar	✘	
+name	名称	varchar	✘	
+note	说明	varchar	√	
+
+表：sys_route : 路由表
+id	ID	int	✘	
+path	路径	varchar	✘	
+name	名称	varchar	✘	
+component	组件	varchar	✘	
+title	标题	varchar	✘	
+breadcrumb_show	面包屑显示	tinyint(1)	✘	
+need_cache	需要缓存	tinyint(1)	✘	
+tag_view	标签显示	tinyint(1)	✘	
+
+表：sys_task : 调度任务
+id		int	✘	
+name	任务名	varchar	✘	
+description	详细说明	varchar	√	
+scedule_years	调度年	varchar	✘	
+schedule_months	调度月	varchar	✘	
+schedule_days	调度日	varchar	✘	
+schedule_weeks	调度星期	varchar	✘	
+schedule_hours	调度时	varchar	✘	
+schedule_minutes	调度分	varchar	✘	
+class_name	类名	varchar	✘	
+mothod_name	方法	varchar	✘	
+is_static	静态方法	tinyint(1)	✘	
+parames	参数	varchar	√	
+is_running	运行中	tinyint(1)	✘	
+
+表：sys_user : 用户
+id	uuid主键	varchar	✘	
+icon	头像	text	√	
+name	用户名	varchar	✘	
+real_name	真实名	varchar	✘	
+sex	性别	varchar	√	
+birth_date	生日	date	√	
+reg_time	注册时间	datetime	√	
+mobile_phone	手机号码	varchar	√	
+email	邮箱	varchar	√	
+wechat_openid	微信openId	varchar	√	
+org_code	部门	int	✘	
+employee_no	工号	varchar	√	
+org_privilege	部门权限	int	√	
+role_list	角色序列	varchar	√	
+locked	被锁定	tinyint(1)	✘	
+state	激活	tinyint(1)	✘	
+id_type	证件类型	int	✘	
+id_number	证件号码	varchar	✘	
+expired_time	账号过期时间	date	√	
+password_expired_time	密码过期时间	date	√	
+password	密码	varchar	✘	
+password_error_times		int	✘	

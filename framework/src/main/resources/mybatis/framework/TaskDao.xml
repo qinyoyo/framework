@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.TaskDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Task">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="scedule_years" jdbcType="VARCHAR" property="sceduleYears" />
+    <result column="schedule_months" jdbcType="VARCHAR" property="scheduleMonths" />
+    <result column="schedule_days" jdbcType="VARCHAR" property="scheduleDays" />
+    <result column="schedule_weeks" jdbcType="VARCHAR" property="scheduleWeeks" />
+    <result column="schedule_hours" jdbcType="VARCHAR" property="scheduleHours" />
+    <result column="schedule_minutes" jdbcType="VARCHAR" property="scheduleMinutes" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="mothod_name" jdbcType="VARCHAR" property="mothodName" />
+    <result column="is_static" jdbcType="TINYINT" property="isStatic" />
+    <result column="parames" jdbcType="VARCHAR" property="parames" />
+    <result column="is_running" jdbcType="TINYINT" property="isRunning" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running FROM sys_task
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Task">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_task (name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+      values 
+      (#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{sceduleYears,jdbcType=VARCHAR},#{scheduleMonths,jdbcType=VARCHAR},#{scheduleDays,jdbcType=VARCHAR},#{scheduleWeeks,jdbcType=VARCHAR},#{scheduleHours,jdbcType=VARCHAR},#{scheduleMinutes,jdbcType=VARCHAR},#{className,jdbcType=VARCHAR},#{mothodName,jdbcType=VARCHAR},#{isStatic,jdbcType=TINYINT},#{parames,jdbcType=VARCHAR},#{isRunning,jdbcType=TINYINT})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Task" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_TASK.nextval from DUAL
+    </selectKey>
+    insert into sys_task (id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+      values 
+      (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{sceduleYears,jdbcType=VARCHAR},#{scheduleMonths,jdbcType=VARCHAR},#{scheduleDays,jdbcType=VARCHAR},#{scheduleWeeks,jdbcType=VARCHAR},#{scheduleHours,jdbcType=VARCHAR},#{scheduleMinutes,jdbcType=VARCHAR},#{className,jdbcType=VARCHAR},#{mothodName,jdbcType=VARCHAR},#{isStatic,jdbcType=TINYINT},#{parames,jdbcType=VARCHAR},#{isRunning,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Task">
+    insert into sys_task (name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.name,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.sceduleYears,jdbcType=VARCHAR},#{item.scheduleMonths,jdbcType=VARCHAR},#{item.scheduleDays,jdbcType=VARCHAR},#{item.scheduleWeeks,jdbcType=VARCHAR},#{item.scheduleHours,jdbcType=VARCHAR},#{item.scheduleMinutes,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.mothodName,jdbcType=VARCHAR},#{item.isStatic,jdbcType=TINYINT},#{item.parames,jdbcType=VARCHAR},#{item.isRunning,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Task" databaseId="Oracle">
+     insert into sys_task (id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+       select SEQUENCE_SYS_TASK.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.name,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.sceduleYears,jdbcType=VARCHAR},#{item.scheduleMonths,jdbcType=VARCHAR},#{item.scheduleDays,jdbcType=VARCHAR},#{item.scheduleWeeks,jdbcType=VARCHAR},#{item.scheduleHours,jdbcType=VARCHAR},#{item.scheduleMinutes,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.mothodName,jdbcType=VARCHAR},#{item.isStatic,jdbcType=TINYINT},#{item.parames,jdbcType=VARCHAR},#{item.isRunning,jdbcType=TINYINT} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Task">
+    insert into sys_task (id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.sceduleYears,jdbcType=VARCHAR},#{item.scheduleMonths,jdbcType=VARCHAR},#{item.scheduleDays,jdbcType=VARCHAR},#{item.scheduleWeeks,jdbcType=VARCHAR},#{item.scheduleHours,jdbcType=VARCHAR},#{item.scheduleMinutes,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.mothodName,jdbcType=VARCHAR},#{item.isStatic,jdbcType=TINYINT},#{item.parames,jdbcType=VARCHAR},#{item.isRunning,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Task" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_task ON 
+    insert into sys_task (id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.sceduleYears,jdbcType=VARCHAR},#{item.scheduleMonths,jdbcType=VARCHAR},#{item.scheduleDays,jdbcType=VARCHAR},#{item.scheduleWeeks,jdbcType=VARCHAR},#{item.scheduleHours,jdbcType=VARCHAR},#{item.scheduleMinutes,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.mothodName,jdbcType=VARCHAR},#{item.isStatic,jdbcType=TINYINT},#{item.parames,jdbcType=VARCHAR},#{item.isRunning,jdbcType=TINYINT})
+    </foreach>
+    set IDENTITY_INSERT sys_task OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Task" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_task (id,name,description,scedule_years,schedule_months,schedule_days,schedule_weeks,schedule_hours,schedule_minutes,class_name,mothod_name,is_static,parames,is_running) values(#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.sceduleYears,jdbcType=VARCHAR},#{item.scheduleMonths,jdbcType=VARCHAR},#{item.scheduleDays,jdbcType=VARCHAR},#{item.scheduleWeeks,jdbcType=VARCHAR},#{item.scheduleHours,jdbcType=VARCHAR},#{item.scheduleMinutes,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.mothodName,jdbcType=VARCHAR},#{item.isStatic,jdbcType=TINYINT},#{item.parames,jdbcType=VARCHAR},#{item.isRunning,jdbcType=TINYINT})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_task where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_task where id in (${_parameter})
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_task where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Task">
+    update sys_task set 
+      name = #{name,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      scedule_years = #{sceduleYears,jdbcType=VARCHAR},
+      schedule_months = #{scheduleMonths,jdbcType=VARCHAR},
+      schedule_days = #{scheduleDays,jdbcType=VARCHAR},
+      schedule_weeks = #{scheduleWeeks,jdbcType=VARCHAR},
+      schedule_hours = #{scheduleHours,jdbcType=VARCHAR},
+      schedule_minutes = #{scheduleMinutes,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR},
+      mothod_name = #{mothodName,jdbcType=VARCHAR},
+      is_static = #{isStatic,jdbcType=TINYINT},
+      parames = #{parames,jdbcType=VARCHAR},
+      is_running = #{isRunning,jdbcType=TINYINT}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Task">
+    update sys_task 
+      <set>
+        <if test="name != null"> name = #{name,jdbcType=VARCHAR},</if>
+        <if test="description != null"> description = #{description,jdbcType=VARCHAR},</if>
+        <if test="sceduleYears != null"> scedule_years = #{sceduleYears,jdbcType=VARCHAR},</if>
+        <if test="scheduleMonths != null"> schedule_months = #{scheduleMonths,jdbcType=VARCHAR},</if>
+        <if test="scheduleDays != null"> schedule_days = #{scheduleDays,jdbcType=VARCHAR},</if>
+        <if test="scheduleWeeks != null"> schedule_weeks = #{scheduleWeeks,jdbcType=VARCHAR},</if>
+        <if test="scheduleHours != null"> schedule_hours = #{scheduleHours,jdbcType=VARCHAR},</if>
+        <if test="scheduleMinutes != null"> schedule_minutes = #{scheduleMinutes,jdbcType=VARCHAR},</if>
+        <if test="className != null"> class_name = #{className,jdbcType=VARCHAR},</if>
+        <if test="mothodName != null"> mothod_name = #{mothodName,jdbcType=VARCHAR},</if>
+        <if test="isStatic != null"> is_static = #{isStatic,jdbcType=TINYINT},</if>
+        <if test="parames != null"> parames = #{parames,jdbcType=VARCHAR},</if>
+        <if test="isRunning != null"> is_running = #{isRunning,jdbcType=TINYINT},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Task">
+    update sys_task set 
+      id = #{record.id,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      scedule_years = #{record.sceduleYears,jdbcType=VARCHAR},
+      schedule_months = #{record.scheduleMonths,jdbcType=VARCHAR},
+      schedule_days = #{record.scheduleDays,jdbcType=VARCHAR},
+      schedule_weeks = #{record.scheduleWeeks,jdbcType=VARCHAR},
+      schedule_hours = #{record.scheduleHours,jdbcType=VARCHAR},
+      schedule_minutes = #{record.scheduleMinutes,jdbcType=VARCHAR},
+      class_name = #{record.className,jdbcType=VARCHAR},
+      mothod_name = #{record.mothodName,jdbcType=VARCHAR},
+      is_static = #{record.isStatic,jdbcType=TINYINT},
+      parames = #{record.parames,jdbcType=VARCHAR},
+      is_running = #{record.isRunning,jdbcType=TINYINT}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Task" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="name != null"> and name like #{name,jdbcType=VARCHAR} </if>
+        <if test="description != null"> and description like #{description,jdbcType=VARCHAR} </if>
+        <if test="sceduleYears != null"> and scedule_years like #{sceduleYears,jdbcType=VARCHAR} </if>
+        <if test="scheduleMonths != null"> and schedule_months like #{scheduleMonths,jdbcType=VARCHAR} </if>
+        <if test="scheduleDays != null"> and schedule_days like #{scheduleDays,jdbcType=VARCHAR} </if>
+        <if test="scheduleWeeks != null"> and schedule_weeks like #{scheduleWeeks,jdbcType=VARCHAR} </if>
+        <if test="scheduleHours != null"> and schedule_hours like #{scheduleHours,jdbcType=VARCHAR} </if>
+        <if test="scheduleMinutes != null"> and schedule_minutes like #{scheduleMinutes,jdbcType=VARCHAR} </if>
+        <if test="className != null"> and class_name like #{className,jdbcType=VARCHAR} </if>
+        <if test="mothodName != null"> and mothod_name like #{mothodName,jdbcType=VARCHAR} </if>
+        <if test="isStatic != null"> and is_static = #{isStatic,jdbcType=TINYINT} </if>
+        <if test="parames != null"> and parames like #{parames,jdbcType=VARCHAR} </if>
+        <if test="isRunning != null"> and is_running = #{isRunning,jdbcType=TINYINT} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

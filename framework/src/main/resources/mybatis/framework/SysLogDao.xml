@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.SysLogDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.SysLog">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="keyword" jdbcType="VARCHAR" property="keyword" />
+    <result column="user_type" jdbcType="VARCHAR" property="userType" />
+    <result column="user_info" jdbcType="VARCHAR" property="userInfo" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,time,keyword,user_type,user_info,note FROM sys_log
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.SysLog">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" >
+      SELECT replace(uuid(), '-', '')
+    </selectKey>
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" databaseId="SQLServer">
+      SELECT replace(lower(newid()), '-', '')
+    </selectKey>
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" databaseId="Oracle">
+      SELECT replace(lower(sys_guid()), '-', '') from dual
+    </selectKey>
+    insert into sys_log (id,time,keyword,user_type,user_info,note)
+      values 
+      (#{id,jdbcType=VARCHAR},#{time,jdbcType=TIMESTAMP},#{keyword,jdbcType=VARCHAR},#{userType,jdbcType=VARCHAR},#{userInfo,jdbcType=VARCHAR},#{note,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.SysLog">
+    insert into sys_log (id,time,keyword,user_type,user_info,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (replace(uuid(), '-', ''),#{item.time,jdbcType=TIMESTAMP},#{item.keyword,jdbcType=VARCHAR},#{item.userType,jdbcType=VARCHAR},#{item.userInfo,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.SysLog" databaseId="SQLServer">
+    insert into sys_log (id,time,keyword,user_type,user_info,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (replace(lower(newid()), '-', ''),#{item.time,jdbcType=TIMESTAMP},#{item.keyword,jdbcType=VARCHAR},#{item.userType,jdbcType=VARCHAR},#{item.userInfo,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.SysLog" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_log (id,time,keyword,user_type,user_info,note) values(replace(lower(sys_guid()), '-', ''),#{item.time,jdbcType=TIMESTAMP},#{item.keyword,jdbcType=VARCHAR},#{item.userType,jdbcType=VARCHAR},#{item.userInfo,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.SysLog">
+    insert into sys_log (id,time,keyword,user_type,user_info,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.keyword,jdbcType=VARCHAR},#{item.userType,jdbcType=VARCHAR},#{item.userInfo,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.SysLog" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_log (id,time,keyword,user_type,user_info,note) values(#{item.id,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.keyword,jdbcType=VARCHAR},#{item.userType,jdbcType=VARCHAR},#{item.userInfo,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="java.lang.String">
+    delete from sys_log where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_log where id in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_log where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.SysLog">
+    update sys_log set 
+      time = #{time,jdbcType=TIMESTAMP},
+      keyword = #{keyword,jdbcType=VARCHAR},
+      user_type = #{userType,jdbcType=VARCHAR},
+      user_info = #{userInfo,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.SysLog">
+    update sys_log 
+      <set>
+        <if test="time != null"> time = #{time,jdbcType=TIMESTAMP},</if>
+        <if test="keyword != null"> keyword = #{keyword,jdbcType=VARCHAR},</if>
+        <if test="userType != null"> user_type = #{userType,jdbcType=VARCHAR},</if>
+        <if test="userInfo != null"> user_info = #{userInfo,jdbcType=VARCHAR},</if>
+        <if test="note != null"> note = #{note,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.SysLog">
+    update sys_log set 
+      id = #{record.id,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      keyword = #{record.keyword,jdbcType=VARCHAR},
+      user_type = #{record.userType,jdbcType=VARCHAR},
+      user_info = #{record.userInfo,jdbcType=VARCHAR},
+      note = #{record.note,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.SysLog" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id like #{id,jdbcType=VARCHAR} </if>
+        <if test="time != null"> and time like #{time,jdbcType=TIMESTAMP} </if>
+        <if test="keyword != null"> and keyword like #{keyword,jdbcType=VARCHAR} </if>
+        <if test="userType != null"> and user_type like #{userType,jdbcType=VARCHAR} </if>
+        <if test="userInfo != null"> and user_info like #{userInfo,jdbcType=VARCHAR} </if>
+        <if test="note != null"> and note like #{note,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.OrgDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Org">
+    <id column="org_code" jdbcType="INTEGER" property="orgCode" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="fax" jdbcType="VARCHAR" property="fax" />
+    <result column="role_list" jdbcType="VARCHAR" property="roleList" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT org_code,name,parent,phone,fax,role_list,address FROM sys_org
+  </sql>
+  <resultMap id="TreeResultMap" type="top.iotequ.framework.pojo.Org">
+    <id column="org_code" jdbcType="INTEGER" property="orgCode" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="fax" jdbcType="VARCHAR" property="fax" />
+    <result column="role_list" jdbcType="VARCHAR" property="roleList" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <collection column="org_code" property="children" ofType="top.iotequ.framework.pojo.Org" javaType="java.util.ArrayList" select="selectChildrenById"/>
+  </resultMap>
+  <select id="selectChildrenById" resultMap="TreeResultMap">
+		<include refid="selectSql" />  WHERE  parent = #{id}
+  </select>
+  <select id="selectTree" parameterType="java.lang.Integer" resultMap="TreeResultMap">
+		<include refid="selectSql" /> where 
+		<choose>
+			<when test="id == null">parent = 0 or parent is null </when>
+			<otherwise>parent = #{id,jdbcType=INTEGER} </otherwise>
+		</choose>
+	</select>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Org">
+    <selectKey keyProperty="orgCode" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="orgCode" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_org (name,parent,phone,fax,role_list,address)
+      values 
+      (#{name,jdbcType=VARCHAR},#{parent,jdbcType=INTEGER},#{phone,jdbcType=VARCHAR},#{fax,jdbcType=VARCHAR},#{roleList,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Org" databaseId="Oracle">
+    <selectKey keyProperty="orgCode" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_ORG.nextval from DUAL
+    </selectKey>
+    insert into sys_org (org_code,name,parent,phone,fax,role_list,address)
+      values 
+      (#{orgCode,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{parent,jdbcType=INTEGER},#{phone,jdbcType=VARCHAR},#{fax,jdbcType=VARCHAR},#{roleList,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Org">
+    insert into sys_org (name,parent,phone,fax,role_list,address)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.phone,jdbcType=VARCHAR},#{item.fax,jdbcType=VARCHAR},#{item.roleList,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Org" databaseId="Oracle">
+     insert into sys_org (org_code,name,parent,phone,fax,role_list,address)
+       select SEQUENCE_SYS_ORG.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.phone,jdbcType=VARCHAR},#{item.fax,jdbcType=VARCHAR},#{item.roleList,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Org">
+    insert into sys_org (org_code,name,parent,phone,fax,role_list,address)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.orgCode,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.phone,jdbcType=VARCHAR},#{item.fax,jdbcType=VARCHAR},#{item.roleList,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Org" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_org ON 
+    insert into sys_org (org_code,name,parent,phone,fax,role_list,address)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.orgCode,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.phone,jdbcType=VARCHAR},#{item.fax,jdbcType=VARCHAR},#{item.roleList,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR})
+    </foreach>
+    set IDENTITY_INSERT sys_org OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Org" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_org (org_code,name,parent,phone,fax,role_list,address) values(#{item.orgCode,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.phone,jdbcType=VARCHAR},#{item.fax,jdbcType=VARCHAR},#{item.roleList,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where org_code = #{orgCode,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_org where org_code = #{orgCode,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_org where org_code in (${_parameter})
+  </delete>
+  <select id="selectByNameParent" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where name = #{name} AND parent = #{parent}
+  </select>
+  <delete id="deleteByNameParent" parameterType="map" >
+    delete from sys_org where name = #{name} AND parent = #{parent}
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_org where org_code in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.orgCode,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Org">
+    update sys_org set 
+      name = #{name,jdbcType=VARCHAR},
+      parent = #{parent,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      role_list = #{roleList,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
+      where org_code = #{orgCode,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Org">
+    update sys_org 
+      <set>
+        <if test="name != null"> name = #{name,jdbcType=VARCHAR},</if>
+        <if test="parent != null"> parent = #{parent,jdbcType=INTEGER},</if>
+        <if test="phone != null"> phone = #{phone,jdbcType=VARCHAR},</if>
+        <if test="fax != null"> fax = #{fax,jdbcType=VARCHAR},</if>
+        <if test="roleList != null"> role_list = #{roleList,jdbcType=VARCHAR},</if>
+        <if test="address != null"> address = #{address,jdbcType=VARCHAR},</if>
+      </set>
+      where org_code = #{orgCode,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Org">
+    update sys_org set 
+      org_code = #{record.orgCode,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      parent = #{record.parent,jdbcType=INTEGER},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      fax = #{record.fax,jdbcType=VARCHAR},
+      role_list = #{record.roleList,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR}
+      where org_code = #{orgCode,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Org" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="orgCode != null"> and org_code = #{orgCode,jdbcType=INTEGER} </if>
+        <if test="name != null"> and name like #{name,jdbcType=VARCHAR} </if>
+        <if test="parent != null"> and parent = #{parent,jdbcType=INTEGER} </if>
+        <if test="phone != null"> and phone like #{phone,jdbcType=VARCHAR} </if>
+        <if test="fax != null"> and fax like #{fax,jdbcType=VARCHAR} </if>
+        <if test="roleList != null"> and role_list like #{roleList,jdbcType=VARCHAR} </if>
+        <if test="address != null"> and address like #{address,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.MessageDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Message">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="read_time" jdbcType="TIMESTAMP" property="readTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+    <result column="sender_name" jdbcType="VARCHAR" property="senderName" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="receiver" jdbcType="VARCHAR" property="receiver" />
+    <result column="sender" jdbcType="VARCHAR" property="sender" />
+    <result column="event_id" jdbcType="VARCHAR" property="eventId" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id FROM sys_message
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Message">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_message (read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+      values 
+      (#{readTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{receiverName,jdbcType=VARCHAR},#{senderName,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR},#{receiver,jdbcType=VARCHAR},#{sender,jdbcType=VARCHAR},#{eventId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Message" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_MESSAGE.nextval from DUAL
+    </selectKey>
+    insert into sys_message (id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+      values 
+      (#{id,jdbcType=INTEGER},#{readTime,jdbcType=TIMESTAMP},#{createTime,jdbcType=TIMESTAMP},#{receiverName,jdbcType=VARCHAR},#{senderName,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR},#{receiver,jdbcType=VARCHAR},#{sender,jdbcType=VARCHAR},#{eventId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Message">
+    insert into sys_message (read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.readTime,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP},#{item.receiverName,jdbcType=VARCHAR},#{item.senderName,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR},#{item.receiver,jdbcType=VARCHAR},#{item.sender,jdbcType=VARCHAR},#{item.eventId,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Message" databaseId="Oracle">
+     insert into sys_message (id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+       select SEQUENCE_SYS_MESSAGE.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.readTime,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP},#{item.receiverName,jdbcType=VARCHAR},#{item.senderName,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR},#{item.receiver,jdbcType=VARCHAR},#{item.sender,jdbcType=VARCHAR},#{item.eventId,jdbcType=VARCHAR} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Message">
+    insert into sys_message (id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.readTime,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP},#{item.receiverName,jdbcType=VARCHAR},#{item.senderName,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR},#{item.receiver,jdbcType=VARCHAR},#{item.sender,jdbcType=VARCHAR},#{item.eventId,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Message" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_message ON 
+    insert into sys_message (id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.readTime,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP},#{item.receiverName,jdbcType=VARCHAR},#{item.senderName,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR},#{item.receiver,jdbcType=VARCHAR},#{item.sender,jdbcType=VARCHAR},#{item.eventId,jdbcType=VARCHAR})
+    </foreach>
+    set IDENTITY_INSERT sys_message OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Message" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_message (id,read_time,create_time,receiver_name,sender_name,title,content,url,receiver,sender,event_id) values(#{item.id,jdbcType=INTEGER},#{item.readTime,jdbcType=TIMESTAMP},#{item.createTime,jdbcType=TIMESTAMP},#{item.receiverName,jdbcType=VARCHAR},#{item.senderName,jdbcType=VARCHAR},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR},#{item.receiver,jdbcType=VARCHAR},#{item.sender,jdbcType=VARCHAR},#{item.eventId,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_message where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_message where id in (${_parameter})
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_message where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Message">
+    update sys_message set 
+      read_time = #{readTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      sender_name = #{senderName,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      receiver = #{receiver,jdbcType=VARCHAR},
+      sender = #{sender,jdbcType=VARCHAR},
+      event_id = #{eventId,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Message">
+    update sys_message 
+      <set>
+        <if test="readTime != null"> read_time = #{readTime,jdbcType=TIMESTAMP},</if>
+        <if test="createTime != null"> create_time = #{createTime,jdbcType=TIMESTAMP},</if>
+        <if test="receiverName != null"> receiver_name = #{receiverName,jdbcType=VARCHAR},</if>
+        <if test="senderName != null"> sender_name = #{senderName,jdbcType=VARCHAR},</if>
+        <if test="title != null"> title = #{title,jdbcType=VARCHAR},</if>
+        <if test="content != null"> content = #{content,jdbcType=VARCHAR},</if>
+        <if test="url != null"> url = #{url,jdbcType=VARCHAR},</if>
+        <if test="receiver != null"> receiver = #{receiver,jdbcType=VARCHAR},</if>
+        <if test="sender != null"> sender = #{sender,jdbcType=VARCHAR},</if>
+        <if test="eventId != null"> event_id = #{eventId,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Message">
+    update sys_message set 
+      id = #{record.id,jdbcType=INTEGER},
+      read_time = #{record.readTime,jdbcType=TIMESTAMP},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      receiver_name = #{record.receiverName,jdbcType=VARCHAR},
+      sender_name = #{record.senderName,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
+      url = #{record.url,jdbcType=VARCHAR},
+      receiver = #{record.receiver,jdbcType=VARCHAR},
+      sender = #{record.sender,jdbcType=VARCHAR},
+      event_id = #{record.eventId,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Message" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="readTime != null"> and read_time like #{readTime,jdbcType=TIMESTAMP} </if>
+        <if test="createTime != null"> and create_time like #{createTime,jdbcType=TIMESTAMP} </if>
+        <if test="receiverName != null"> and receiver_name like #{receiverName,jdbcType=VARCHAR} </if>
+        <if test="senderName != null"> and sender_name like #{senderName,jdbcType=VARCHAR} </if>
+        <if test="title != null"> and title like #{title,jdbcType=VARCHAR} </if>
+        <if test="content != null"> and content like #{content,jdbcType=VARCHAR} </if>
+        <if test="url != null"> and url like #{url,jdbcType=VARCHAR} </if>
+        <if test="receiver != null"> and receiver like #{receiver,jdbcType=VARCHAR} </if>
+        <if test="sender != null"> and sender like #{sender,jdbcType=VARCHAR} </if>
+        <if test="eventId != null"> and event_id like #{eventId,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.OauthClientDetailsDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.OauthClientDetails">
+    <id column="client_id" jdbcType="VARCHAR" property="clientId" />
+    <result column="client_secret" jdbcType="VARCHAR" property="clientSecret" />
+    <result column="scope" jdbcType="VARCHAR" property="scope" />
+    <result column="authorized_grant_types" jdbcType="VARCHAR" property="authorizedGrantTypes" />
+    <result column="web_server_redirect_uri" jdbcType="VARCHAR" property="webServerRedirectUri" />
+    <result column="authorities" jdbcType="VARCHAR" property="authorities" />
+    <result column="access_token_validity" jdbcType="INTEGER" property="accessTokenValidity" />
+    <result column="refresh_token_validity" jdbcType="INTEGER" property="refreshTokenValidity" />
+    <result column="autoapprove" jdbcType="VARCHAR" property="autoapprove" />
+    <result column="expired_date" jdbcType="TIMESTAMP" property="expiredDate" />
+    <result column="locked" jdbcType="TINYINT" property="locked" />
+    <result column="enabled" jdbcType="TINYINT" property="enabled" />
+    <result column="decription" jdbcType="VARCHAR" property="decription" />
+    <result column="additional_information" jdbcType="VARCHAR" property="additionalInformation" />
+    <result column="resource_ids" jdbcType="VARCHAR" property="resourceIds" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT client_id,client_secret,scope,authorized_grant_types,web_server_redirect_uri,authorities,access_token_validity,refresh_token_validity,autoapprove,expired_date,locked,enabled,decription,additional_information,resource_ids FROM oauth_client_details
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.OauthClientDetails">
+    insert into oauth_client_details (client_id,client_secret,scope,authorized_grant_types,web_server_redirect_uri,authorities,access_token_validity,refresh_token_validity,autoapprove,expired_date,locked,enabled,decription,additional_information,resource_ids)
+      values 
+      (#{clientId,jdbcType=VARCHAR},#{clientSecret,jdbcType=VARCHAR},#{scope,jdbcType=VARCHAR},#{authorizedGrantTypes,jdbcType=VARCHAR},#{webServerRedirectUri,jdbcType=VARCHAR},#{authorities,jdbcType=VARCHAR},#{accessTokenValidity,jdbcType=INTEGER},#{refreshTokenValidity,jdbcType=INTEGER},#{autoapprove,jdbcType=VARCHAR},#{expiredDate,jdbcType=TIMESTAMP},#{locked,jdbcType=TINYINT},#{enabled,jdbcType=TINYINT},#{decription,jdbcType=VARCHAR},#{additionalInformation,jdbcType=VARCHAR},#{resourceIds,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.OauthClientDetails">
+    insert into oauth_client_details (client_id,client_secret,scope,authorized_grant_types,web_server_redirect_uri,authorities,access_token_validity,refresh_token_validity,autoapprove,expired_date,locked,enabled,decription,additional_information,resource_ids)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.clientId,jdbcType=VARCHAR},#{item.clientSecret,jdbcType=VARCHAR},#{item.scope,jdbcType=VARCHAR},#{item.authorizedGrantTypes,jdbcType=VARCHAR},#{item.webServerRedirectUri,jdbcType=VARCHAR},#{item.authorities,jdbcType=VARCHAR},#{item.accessTokenValidity,jdbcType=INTEGER},#{item.refreshTokenValidity,jdbcType=INTEGER},#{item.autoapprove,jdbcType=VARCHAR},#{item.expiredDate,jdbcType=TIMESTAMP},#{item.locked,jdbcType=TINYINT},#{item.enabled,jdbcType=TINYINT},#{item.decription,jdbcType=VARCHAR},#{item.additionalInformation,jdbcType=VARCHAR},#{item.resourceIds,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.OauthClientDetails" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into oauth_client_details (client_id,client_secret,scope,authorized_grant_types,web_server_redirect_uri,authorities,access_token_validity,refresh_token_validity,autoapprove,expired_date,locked,enabled,decription,additional_information,resource_ids) values(#{item.clientId,jdbcType=VARCHAR},#{item.clientSecret,jdbcType=VARCHAR},#{item.scope,jdbcType=VARCHAR},#{item.authorizedGrantTypes,jdbcType=VARCHAR},#{item.webServerRedirectUri,jdbcType=VARCHAR},#{item.authorities,jdbcType=VARCHAR},#{item.accessTokenValidity,jdbcType=INTEGER},#{item.refreshTokenValidity,jdbcType=INTEGER},#{item.autoapprove,jdbcType=VARCHAR},#{item.expiredDate,jdbcType=TIMESTAMP},#{item.locked,jdbcType=TINYINT},#{item.enabled,jdbcType=TINYINT},#{item.decription,jdbcType=VARCHAR},#{item.additionalInformation,jdbcType=VARCHAR},#{item.resourceIds,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where client_id = #{clientId,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="java.lang.String">
+    delete from oauth_client_details where client_id = #{clientId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from oauth_client_details where client_id in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from oauth_client_details where client_id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.clientId,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.OauthClientDetails">
+    update oauth_client_details set 
+      client_secret = #{clientSecret,jdbcType=VARCHAR},
+      scope = #{scope,jdbcType=VARCHAR},
+      authorized_grant_types = #{authorizedGrantTypes,jdbcType=VARCHAR},
+      web_server_redirect_uri = #{webServerRedirectUri,jdbcType=VARCHAR},
+      authorities = #{authorities,jdbcType=VARCHAR},
+      access_token_validity = #{accessTokenValidity,jdbcType=INTEGER},
+      refresh_token_validity = #{refreshTokenValidity,jdbcType=INTEGER},
+      autoapprove = #{autoapprove,jdbcType=VARCHAR},
+      expired_date = #{expiredDate,jdbcType=TIMESTAMP},
+      locked = #{locked,jdbcType=TINYINT},
+      enabled = #{enabled,jdbcType=TINYINT},
+      decription = #{decription,jdbcType=VARCHAR},
+      additional_information = #{additionalInformation,jdbcType=VARCHAR},
+      resource_ids = #{resourceIds,jdbcType=VARCHAR}
+      where client_id = #{clientId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.OauthClientDetails">
+    update oauth_client_details 
+      <set>
+        <if test="clientSecret != null"> client_secret = #{clientSecret,jdbcType=VARCHAR},</if>
+        <if test="scope != null"> scope = #{scope,jdbcType=VARCHAR},</if>
+        <if test="authorizedGrantTypes != null"> authorized_grant_types = #{authorizedGrantTypes,jdbcType=VARCHAR},</if>
+        <if test="webServerRedirectUri != null"> web_server_redirect_uri = #{webServerRedirectUri,jdbcType=VARCHAR},</if>
+        <if test="authorities != null"> authorities = #{authorities,jdbcType=VARCHAR},</if>
+        <if test="accessTokenValidity != null"> access_token_validity = #{accessTokenValidity,jdbcType=INTEGER},</if>
+        <if test="refreshTokenValidity != null"> refresh_token_validity = #{refreshTokenValidity,jdbcType=INTEGER},</if>
+        <if test="autoapprove != null"> autoapprove = #{autoapprove,jdbcType=VARCHAR},</if>
+        <if test="expiredDate != null"> expired_date = #{expiredDate,jdbcType=TIMESTAMP},</if>
+        <if test="locked != null"> locked = #{locked,jdbcType=TINYINT},</if>
+        <if test="enabled != null"> enabled = #{enabled,jdbcType=TINYINT},</if>
+        <if test="decription != null"> decription = #{decription,jdbcType=VARCHAR},</if>
+        <if test="additionalInformation != null"> additional_information = #{additionalInformation,jdbcType=VARCHAR},</if>
+        <if test="resourceIds != null"> resource_ids = #{resourceIds,jdbcType=VARCHAR},</if>
+      </set>
+      where client_id = #{clientId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.OauthClientDetails">
+    update oauth_client_details set 
+      client_id = #{record.clientId,jdbcType=VARCHAR},
+      client_secret = #{record.clientSecret,jdbcType=VARCHAR},
+      scope = #{record.scope,jdbcType=VARCHAR},
+      authorized_grant_types = #{record.authorizedGrantTypes,jdbcType=VARCHAR},
+      web_server_redirect_uri = #{record.webServerRedirectUri,jdbcType=VARCHAR},
+      authorities = #{record.authorities,jdbcType=VARCHAR},
+      access_token_validity = #{record.accessTokenValidity,jdbcType=INTEGER},
+      refresh_token_validity = #{record.refreshTokenValidity,jdbcType=INTEGER},
+      autoapprove = #{record.autoapprove,jdbcType=VARCHAR},
+      expired_date = #{record.expiredDate,jdbcType=TIMESTAMP},
+      locked = #{record.locked,jdbcType=TINYINT},
+      enabled = #{record.enabled,jdbcType=TINYINT},
+      decription = #{record.decription,jdbcType=VARCHAR},
+      additional_information = #{record.additionalInformation,jdbcType=VARCHAR},
+      resource_ids = #{record.resourceIds,jdbcType=VARCHAR}
+      where client_id = #{clientId,jdbcType=VARCHAR}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.OauthClientDetails" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="clientId != null"> and client_id like #{clientId,jdbcType=VARCHAR} </if>
+        <if test="clientSecret != null"> and client_secret like #{clientSecret,jdbcType=VARCHAR} </if>
+        <if test="scope != null"> and scope like #{scope,jdbcType=VARCHAR} </if>
+        <if test="authorizedGrantTypes != null"> and authorized_grant_types like #{authorizedGrantTypes,jdbcType=VARCHAR} </if>
+        <if test="webServerRedirectUri != null"> and web_server_redirect_uri like #{webServerRedirectUri,jdbcType=VARCHAR} </if>
+        <if test="authorities != null"> and authorities like #{authorities,jdbcType=VARCHAR} </if>
+        <if test="accessTokenValidity != null"> and access_token_validity = #{accessTokenValidity,jdbcType=INTEGER} </if>
+        <if test="refreshTokenValidity != null"> and refresh_token_validity = #{refreshTokenValidity,jdbcType=INTEGER} </if>
+        <if test="autoapprove != null"> and autoapprove like #{autoapprove,jdbcType=VARCHAR} </if>
+        <if test="expiredDate != null"> and expired_date like #{expiredDate,jdbcType=TIMESTAMP} </if>
+        <if test="locked != null"> and locked = #{locked,jdbcType=TINYINT} </if>
+        <if test="enabled != null"> and enabled = #{enabled,jdbcType=TINYINT} </if>
+        <if test="decription != null"> and decription like #{decription,jdbcType=VARCHAR} </if>
+        <if test="additionalInformation != null"> and additional_information like #{additionalInformation,jdbcType=VARCHAR} </if>
+        <if test="resourceIds != null"> and resource_ids like #{resourceIds,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.RoleDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Role">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,code,name,note FROM sys_role
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Role">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_role (code,name,note)
+      values 
+      (#{code,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{note,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Role" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_ROLE.nextval from DUAL
+    </selectKey>
+    insert into sys_role (id,code,name,note)
+      values 
+      (#{id,jdbcType=INTEGER},#{code,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{note,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Role">
+    insert into sys_role (code,name,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Role" databaseId="Oracle">
+     insert into sys_role (id,code,name,note)
+       select SEQUENCE_SYS_ROLE.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Role">
+    insert into sys_role (id,code,name,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Role" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_role ON 
+    insert into sys_role (id,code,name,note)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+    set IDENTITY_INSERT sys_role OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Role" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_role (id,code,name,note) values(#{item.id,jdbcType=INTEGER},#{item.code,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.note,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_role where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_role where id in (${_parameter})
+  </delete>
+  <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where code = #{code,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByCode" parameterType="java.lang.String">
+    delete from sys_role where code = #{code,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByCode" parameterType="java.lang.String">
+    delete from sys_role where code in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByName" parameterType="java.lang.String">
+    delete from sys_role where name = #{name,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByName" parameterType="java.lang.String">
+    delete from sys_role where name in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_role where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Role">
+    update sys_role set 
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Role">
+    update sys_role 
+      <set>
+        <if test="code != null"> code = #{code,jdbcType=VARCHAR},</if>
+        <if test="name != null"> name = #{name,jdbcType=VARCHAR},</if>
+        <if test="note != null"> note = #{note,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Role">
+    update sys_role set 
+      id = #{record.id,jdbcType=INTEGER},
+      code = #{record.code,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      note = #{record.note,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Role" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="code != null"> and code like #{code,jdbcType=VARCHAR} </if>
+        <if test="name != null"> and name like #{name,jdbcType=VARCHAR} </if>
+        <if test="note != null"> and note like #{note,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

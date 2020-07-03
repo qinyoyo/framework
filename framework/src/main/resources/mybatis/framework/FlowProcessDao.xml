@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.FlowProcessDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.FlowProcess">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="flow_id" jdbcType="VARCHAR" property="flowId" />
+    <result column="operation" jdbcType="VARCHAR" property="operation" />
+    <result column="selection" jdbcType="VARCHAR" property="selection" />
+    <result column="state_name0" jdbcType="VARCHAR" property="stateName0" />
+    <result column="state_name1" jdbcType="VARCHAR" property="stateName1" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="state0" jdbcType="INTEGER" property="state0" />
+    <result column="state1" jdbcType="INTEGER" property="state1" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="operator_sys_user_real_name" jdbcType="VARCHAR" property="operatorSysUserRealName" />
+    <result column="next_operator" jdbcType="VARCHAR" property="nextOperator" />
+    <result column="next_operator_sys_user_real_name" jdbcType="VARCHAR" property="nextOperatorSysUserRealName" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT sys_flow_process.id,sys_flow_process.flow_id,sys_flow_process.operation,sys_flow_process.selection,sys_flow_process.state_name0,sys_flow_process.state_name1,sys_flow_process.time,sys_flow_process.note,sys_flow_process.state0,sys_flow_process.state1,sys_flow_process.operator,sys_user.real_name AS operator_sys_user_real_name,sys_flow_process.next_operator,sys_user1.real_name AS next_operator_sys_user_real_name FROM sys_flow_process LEFT JOIN sys_user ON sys_flow_process.operator = sys_user.id LEFT JOIN sys_user sys_user1 ON sys_flow_process.next_operator = sys_user1.id
+  </sql>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" >
+      SELECT replace(uuid(), '-', '')
+    </selectKey>
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" databaseId="SQLServer">
+      SELECT replace(lower(newid()), '-', '')
+    </selectKey>
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String" databaseId="Oracle">
+      SELECT replace(lower(sys_guid()), '-', '') from dual
+    </selectKey>
+    insert into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator)
+      values 
+      (#{id,jdbcType=VARCHAR},#{flowId,jdbcType=VARCHAR},#{operation,jdbcType=VARCHAR},#{selection,jdbcType=VARCHAR},#{stateName0,jdbcType=VARCHAR},#{stateName1,jdbcType=VARCHAR},#{time,jdbcType=TIMESTAMP},#{note,jdbcType=VARCHAR},#{state0,jdbcType=INTEGER},#{state1,jdbcType=INTEGER},#{operator,jdbcType=VARCHAR},#{nextOperator,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    insert into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (replace(uuid(), '-', ''),#{item.flowId,jdbcType=VARCHAR},#{item.operation,jdbcType=VARCHAR},#{item.selection,jdbcType=VARCHAR},#{item.stateName0,jdbcType=VARCHAR},#{item.stateName1,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.note,jdbcType=VARCHAR},#{item.state0,jdbcType=INTEGER},#{item.state1,jdbcType=INTEGER},#{item.operator,jdbcType=VARCHAR},#{item.nextOperator,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.FlowProcess" databaseId="SQLServer">
+    insert into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (replace(lower(newid()), '-', ''),#{item.flowId,jdbcType=VARCHAR},#{item.operation,jdbcType=VARCHAR},#{item.selection,jdbcType=VARCHAR},#{item.stateName0,jdbcType=VARCHAR},#{item.stateName1,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.note,jdbcType=VARCHAR},#{item.state0,jdbcType=INTEGER},#{item.state1,jdbcType=INTEGER},#{item.operator,jdbcType=VARCHAR},#{item.nextOperator,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.FlowProcess" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator) values(replace(lower(sys_guid()), '-', ''),#{item.flowId,jdbcType=VARCHAR},#{item.operation,jdbcType=VARCHAR},#{item.selection,jdbcType=VARCHAR},#{item.stateName0,jdbcType=VARCHAR},#{item.stateName1,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.note,jdbcType=VARCHAR},#{item.state0,jdbcType=INTEGER},#{item.state1,jdbcType=INTEGER},#{item.operator,jdbcType=VARCHAR},#{item.nextOperator,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    insert into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR},#{item.flowId,jdbcType=VARCHAR},#{item.operation,jdbcType=VARCHAR},#{item.selection,jdbcType=VARCHAR},#{item.stateName0,jdbcType=VARCHAR},#{item.stateName1,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.note,jdbcType=VARCHAR},#{item.state0,jdbcType=INTEGER},#{item.state1,jdbcType=INTEGER},#{item.operator,jdbcType=VARCHAR},#{item.nextOperator,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.FlowProcess" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_flow_process (id,flow_id,operation,selection,state_name0,state_name1,time,note,state0,state1,operator,next_operator) values(#{item.id,jdbcType=VARCHAR},#{item.flowId,jdbcType=VARCHAR},#{item.operation,jdbcType=VARCHAR},#{item.selection,jdbcType=VARCHAR},#{item.stateName0,jdbcType=VARCHAR},#{item.stateName1,jdbcType=VARCHAR},#{item.time,jdbcType=TIMESTAMP},#{item.note,jdbcType=VARCHAR},#{item.state0,jdbcType=INTEGER},#{item.state1,jdbcType=INTEGER},#{item.operator,jdbcType=VARCHAR},#{item.nextOperator,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where sys_flow_process.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="java.lang.String">
+    delete from sys_flow_process where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_flow_process where id in     <foreach item="item" index="index" collection="_parameter.split(',')" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_flow_process where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    update sys_flow_process set 
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      operation = #{operation,jdbcType=VARCHAR},
+      selection = #{selection,jdbcType=VARCHAR},
+      state_name0 = #{stateName0,jdbcType=VARCHAR},
+      state_name1 = #{stateName1,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP},
+      note = #{note,jdbcType=VARCHAR},
+      state0 = #{state0,jdbcType=INTEGER},
+      state1 = #{state1,jdbcType=INTEGER},
+      operator = #{operator,jdbcType=VARCHAR},
+      next_operator = #{nextOperator,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    update sys_flow_process 
+      <set>
+        <if test="flowId != null"> flow_id = #{flowId,jdbcType=VARCHAR},</if>
+        <if test="operation != null"> operation = #{operation,jdbcType=VARCHAR},</if>
+        <if test="selection != null"> selection = #{selection,jdbcType=VARCHAR},</if>
+        <if test="stateName0 != null"> state_name0 = #{stateName0,jdbcType=VARCHAR},</if>
+        <if test="stateName1 != null"> state_name1 = #{stateName1,jdbcType=VARCHAR},</if>
+        <if test="time != null"> time = #{time,jdbcType=TIMESTAMP},</if>
+        <if test="note != null"> note = #{note,jdbcType=VARCHAR},</if>
+        <if test="state0 != null"> state0 = #{state0,jdbcType=INTEGER},</if>
+        <if test="state1 != null"> state1 = #{state1,jdbcType=INTEGER},</if>
+        <if test="operator != null"> operator = #{operator,jdbcType=VARCHAR},</if>
+        <if test="nextOperator != null"> next_operator = #{nextOperator,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.FlowProcess">
+    update sys_flow_process set 
+      id = #{record.id,jdbcType=VARCHAR},
+      flow_id = #{record.flowId,jdbcType=VARCHAR},
+      operation = #{record.operation,jdbcType=VARCHAR},
+      selection = #{record.selection,jdbcType=VARCHAR},
+      state_name0 = #{record.stateName0,jdbcType=VARCHAR},
+      state_name1 = #{record.stateName1,jdbcType=VARCHAR},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      note = #{record.note,jdbcType=VARCHAR},
+      state0 = #{record.state0,jdbcType=INTEGER},
+      state1 = #{record.state1,jdbcType=INTEGER},
+      operator = #{record.operator,jdbcType=VARCHAR},
+      next_operator = #{record.nextOperator,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.FlowProcess" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and sys_flow_process.id like #{id,jdbcType=VARCHAR} </if>
+        <if test="flowId != null"> and sys_flow_process.flow_id like #{flowId,jdbcType=VARCHAR} </if>
+        <if test="operation != null"> and sys_flow_process.operation like #{operation,jdbcType=VARCHAR} </if>
+        <if test="selection != null"> and sys_flow_process.selection like #{selection,jdbcType=VARCHAR} </if>
+        <if test="stateName0 != null"> and sys_flow_process.state_name0 like #{stateName0,jdbcType=VARCHAR} </if>
+        <if test="stateName1 != null"> and sys_flow_process.state_name1 like #{stateName1,jdbcType=VARCHAR} </if>
+        <if test="time != null"> and sys_flow_process.time like #{time,jdbcType=TIMESTAMP} </if>
+        <if test="note != null"> and sys_flow_process.note like #{note,jdbcType=VARCHAR} </if>
+        <if test="state0 != null"> and sys_flow_process.state0 = #{state0,jdbcType=INTEGER} </if>
+        <if test="state1 != null"> and sys_flow_process.state1 = #{state1,jdbcType=INTEGER} </if>
+        <if test="operator != null"> and sys_flow_process.operator like #{operator,jdbcType=VARCHAR} </if>
+        <if test="operatorSysUserRealName != null"> and sys_user.real_name like #{operatorSysUserRealName,jdbcType=VARCHAR} </if>
+        <if test="nextOperator != null"> and sys_flow_process.next_operator like #{nextOperator,jdbcType=VARCHAR} </if>
+        <if test="nextOperatorSysUserRealName != null"> and sys_user1.real_name like #{nextOperatorSysUserRealName,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>

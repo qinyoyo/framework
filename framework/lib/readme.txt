@@ -1,0 +1,1 @@
+请将文件 ojdbc7-12.1.0.2.jar 拷贝到  .m2\repository\com\oracle\ojdbc7\12.1.0.2

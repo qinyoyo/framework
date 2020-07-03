@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.iotequ.framework.dao.MenuDao">
+  <resultMap id="BaseResultMap" type="top.iotequ.framework.pojo.Menu">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sort_num" jdbcType="INTEGER" property="sortNum" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="is_divider" jdbcType="TINYINT" property="isDivider" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="action" jdbcType="VARCHAR" property="action" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="data_action" jdbcType="VARCHAR" property="dataAction" />
+    <result column="bigIcon" jdbcType="VARCHAR" property="bigicon" />
+    <result column="mobile_hidden" jdbcType="TINYINT" property="mobileHidden" />
+    <result column="js_cmd" jdbcType="VARCHAR" property="jsCmd" />
+  </resultMap>
+  <sql id = "selectSql">
+     SELECT id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd FROM sys_menu
+  </sql>
+  <resultMap id="TreeResultMap" type="top.iotequ.framework.pojo.Menu">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sort_num" jdbcType="INTEGER" property="sortNum" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="is_divider" jdbcType="TINYINT" property="isDivider" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="action" jdbcType="VARCHAR" property="action" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="data_action" jdbcType="VARCHAR" property="dataAction" />
+    <result column="bigIcon" jdbcType="VARCHAR" property="bigicon" />
+    <result column="mobile_hidden" jdbcType="TINYINT" property="mobileHidden" />
+    <result column="js_cmd" jdbcType="VARCHAR" property="jsCmd" />
+    <collection column="id" property="children" ofType="top.iotequ.framework.pojo.Menu" javaType="java.util.ArrayList" select="selectChildrenById"/>
+  </resultMap>
+  <select id="selectChildrenById" resultMap="TreeResultMap">
+		<include refid="selectSql" />  WHERE  parent = #{id}
+  </select>
+  <select id="selectTree" parameterType="java.lang.Integer" resultMap="TreeResultMap">
+		<include refid="selectSql" /> where 
+		<choose>
+			<when test="id == null">parent = 0 or parent is null </when>
+			<otherwise>parent = #{id,jdbcType=INTEGER} </otherwise>
+		</choose>
+	</select>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Menu">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer" databaseId="SQLServer">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into sys_menu (sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+      values 
+      (#{sortNum,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{parent,jdbcType=INTEGER},#{isDivider,jdbcType=TINYINT},#{icon,jdbcType=VARCHAR},#{action,jdbcType=VARCHAR},#{className,jdbcType=VARCHAR},#{dataAction,jdbcType=VARCHAR},#{bigicon,jdbcType=VARCHAR},#{mobileHidden,jdbcType=TINYINT},#{jsCmd,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insert" parameterType="top.iotequ.framework.pojo.Menu" databaseId="Oracle">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer" >
+      SELECT SEQUENCE_SYS_MENU.nextval from DUAL
+    </selectKey>
+    insert into sys_menu (id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+      values 
+      (#{id,jdbcType=INTEGER},#{sortNum,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{parent,jdbcType=INTEGER},#{isDivider,jdbcType=TINYINT},#{icon,jdbcType=VARCHAR},#{action,jdbcType=VARCHAR},#{className,jdbcType=VARCHAR},#{dataAction,jdbcType=VARCHAR},#{bigicon,jdbcType=VARCHAR},#{mobileHidden,jdbcType=TINYINT},#{jsCmd,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Menu">
+    insert into sys_menu (sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.sortNum,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.isDivider,jdbcType=TINYINT},#{item.icon,jdbcType=VARCHAR},#{item.action,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.dataAction,jdbcType=VARCHAR},#{item.bigicon,jdbcType=VARCHAR},#{item.mobileHidden,jdbcType=TINYINT},#{item.jsCmd,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithoutId" parameterType="top.iotequ.framework.pojo.Menu" databaseId="Oracle">
+     insert into sys_menu (id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+       select SEQUENCE_SYS_MENU.nextval,cd.* from(
+          <foreach collection="list" item="item" index="index" separator="union all">
+             select #{item.sortNum,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.isDivider,jdbcType=TINYINT},#{item.icon,jdbcType=VARCHAR},#{item.action,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.dataAction,jdbcType=VARCHAR},#{item.bigicon,jdbcType=VARCHAR},#{item.mobileHidden,jdbcType=TINYINT},#{item.jsCmd,jdbcType=VARCHAR} from dual
+          </foreach>
+       ) cd
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Menu">
+    insert into sys_menu (id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.sortNum,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.isDivider,jdbcType=TINYINT},#{item.icon,jdbcType=VARCHAR},#{item.action,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.dataAction,jdbcType=VARCHAR},#{item.bigicon,jdbcType=VARCHAR},#{item.mobileHidden,jdbcType=TINYINT},#{item.jsCmd,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Menu" databaseId="SQLServer">
+    set IDENTITY_INSERT sys_menu ON 
+    insert into sys_menu (id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd)
+      values 
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER},#{item.sortNum,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.isDivider,jdbcType=TINYINT},#{item.icon,jdbcType=VARCHAR},#{item.action,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.dataAction,jdbcType=VARCHAR},#{item.bigicon,jdbcType=VARCHAR},#{item.mobileHidden,jdbcType=TINYINT},#{item.jsCmd,jdbcType=VARCHAR})
+    </foreach>
+    set IDENTITY_INSERT sys_menu OFF 
+  </insert>
+  <insert id="insertBatchWithId" parameterType="top.iotequ.framework.pojo.Menu" databaseId="Oracle">
+    insert all 
+    <foreach collection="list" item="item" index="index">
+      into sys_menu (id,sort_num,name,parent,is_divider,icon,action,class_name,data_action,bigIcon,mobile_hidden,js_cmd) values(#{item.id,jdbcType=INTEGER},#{item.sortNum,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.parent,jdbcType=INTEGER},#{item.isDivider,jdbcType=TINYINT},#{item.icon,jdbcType=VARCHAR},#{item.action,jdbcType=VARCHAR},#{item.className,jdbcType=VARCHAR},#{item.dataAction,jdbcType=VARCHAR},#{item.bigicon,jdbcType=VARCHAR},#{item.mobileHidden,jdbcType=TINYINT},#{item.jsCmd,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+  <select id="select" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer">
+    delete from sys_menu where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBatch" parameterType="java.lang.String">
+    delete from sys_menu where id in (${_parameter})
+  </delete>
+  <select id="selectByNameParentAction" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" /> where name = #{name} AND parent = #{parent} AND action = #{action}
+  </select>
+  <delete id="deleteByNameParentAction" parameterType="map" >
+    delete from sys_menu where name = #{name} AND parent = #{parent} AND action = #{action}
+  </delete>
+  <delete id="deleteList" parameterType="java.util.List">
+    delete from sys_menu where id in
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")"> 
+       #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <update id="update" parameterType="top.iotequ.framework.pojo.Menu">
+    update sys_menu set 
+      sort_num = #{sortNum,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      parent = #{parent,jdbcType=INTEGER},
+      is_divider = #{isDivider,jdbcType=TINYINT},
+      icon = #{icon,jdbcType=VARCHAR},
+      action = #{action,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR},
+      data_action = #{dataAction,jdbcType=VARCHAR},
+      bigIcon = #{bigicon,jdbcType=VARCHAR},
+      mobile_hidden = #{mobileHidden,jdbcType=TINYINT},
+      js_cmd = #{jsCmd,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="top.iotequ.framework.pojo.Menu">
+    update sys_menu 
+      <set>
+        <if test="sortNum != null"> sort_num = #{sortNum,jdbcType=INTEGER},</if>
+        <if test="name != null"> name = #{name,jdbcType=VARCHAR},</if>
+        <if test="parent != null"> parent = #{parent,jdbcType=INTEGER},</if>
+        <if test="isDivider != null"> is_divider = #{isDivider,jdbcType=TINYINT},</if>
+        <if test="icon != null"> icon = #{icon,jdbcType=VARCHAR},</if>
+        <if test="action != null"> action = #{action,jdbcType=VARCHAR},</if>
+        <if test="className != null"> class_name = #{className,jdbcType=VARCHAR},</if>
+        <if test="dataAction != null"> data_action = #{dataAction,jdbcType=VARCHAR},</if>
+        <if test="bigicon != null"> bigIcon = #{bigicon,jdbcType=VARCHAR},</if>
+        <if test="mobileHidden != null"> mobile_hidden = #{mobileHidden,jdbcType=TINYINT},</if>
+        <if test="jsCmd != null"> js_cmd = #{jsCmd,jdbcType=VARCHAR},</if>
+      </set>
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBy" parameterType="top.iotequ.framework.pojo.Menu">
+    update sys_menu set 
+      id = #{record.id,jdbcType=INTEGER},
+      sort_num = #{record.sortNum,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      parent = #{record.parent,jdbcType=INTEGER},
+      is_divider = #{record.isDivider,jdbcType=TINYINT},
+      icon = #{record.icon,jdbcType=VARCHAR},
+      action = #{record.action,jdbcType=VARCHAR},
+      class_name = #{record.className,jdbcType=VARCHAR},
+      data_action = #{record.dataAction,jdbcType=VARCHAR},
+      bigIcon = #{record.bigicon,jdbcType=VARCHAR},
+      mobile_hidden = #{record.mobileHidden,jdbcType=TINYINT},
+      js_cmd = #{record.jsCmd,jdbcType=VARCHAR}
+      where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="list" parameterType="top.iotequ.framework.pojo.Menu" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+     where 1=1 
+        <if test="id != null"> and id = #{id,jdbcType=INTEGER} </if>
+        <if test="sortNum != null"> and sort_num = #{sortNum,jdbcType=INTEGER} </if>
+        <if test="name != null"> and name like #{name,jdbcType=VARCHAR} </if>
+        <if test="parent != null"> and parent = #{parent,jdbcType=INTEGER} </if>
+        <if test="isDivider != null"> and is_divider = #{isDivider,jdbcType=TINYINT} </if>
+        <if test="icon != null"> and icon like #{icon,jdbcType=VARCHAR} </if>
+        <if test="action != null"> and action like #{action,jdbcType=VARCHAR} </if>
+        <if test="className != null"> and class_name like #{className,jdbcType=VARCHAR} </if>
+        <if test="dataAction != null"> and data_action like #{dataAction,jdbcType=VARCHAR} </if>
+        <if test="bigicon != null"> and bigIcon like #{bigicon,jdbcType=VARCHAR} </if>
+        <if test="mobileHidden != null"> and mobile_hidden = #{mobileHidden,jdbcType=TINYINT} </if>
+        <if test="jsCmd != null"> and js_cmd like #{jsCmd,jdbcType=VARCHAR} </if>
+  </select>
+  <select id="listBy" parameterType="map" resultMap="BaseResultMap">
+    <include refid="selectSql" />
+        <if test="whereString != null and whereString !=''"> where ${whereString} </if>
+        <if test="orderString != null and orderString!=''"> order by ${orderString} </if>
+  </select>
+  <select id="query" parameterType="map" resultMap="BaseResultMap">
+        ${sqlString}
+  </select>
+</mapper>
